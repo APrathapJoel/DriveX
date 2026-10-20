@@ -46,17 +46,7 @@ export function renderVehiclesPage(): string {
             <!-- Search -->
             <div class="filter-group">
               <label class="form-label">Search</label>
-              <input type="text" class="form-input" id="filter-search" placeholder="Brand or model..." value="${currentFilters.search || ''}"/>
-            </div>
-
-            <!-- Brand -->
-            <div class="filter-group">
-              <label class="form-label">Brand</label>
-              <div class="filter-chips" id="filter-brand">
-                ${['Maruti Suzuki', 'Hyundai', 'Tata', 'Mahindra', 'Toyota', 'Kia', 'Honda', 'Volkswagen', 'Škoda', 'MG', 'Force', 'Jeep', 'BMW', 'Mercedes-Benz', 'Audi', 'Land Rover', 'Ford', 'Porsche']
-                  .map(b => `<button class="filter-chip ${(currentFilters.brand || '').split(',').includes(b) ? 'active' : ''}" data-value="${b}">${b}</button>`)
-                  .join('')}
-              </div>
+              <input type="text" class="form-input" id="filter-search" placeholder="Search vehicle name, model, or city..." value="${currentFilters.search || ''}"/>
             </div>
 
             <!-- Category -->
@@ -141,8 +131,8 @@ export function renderVehiclesPage(): string {
 export async function initVehiclesPage() {
   await loadVehicles();
 
-  // Filter chips (multi-select for brand, category and fuelType, single-select for transmission)
-  ['filter-brand', 'filter-category', 'filter-fuelType'].forEach(id => {
+  // Filter chips (multi-select for category and fuelType, single-select for transmission)
+  ['filter-category', 'filter-fuelType'].forEach(id => {
     const container = document.getElementById(id);
     container?.addEventListener('click', (e) => {
       const chip = (e.target as HTMLElement).closest('.filter-chip') as HTMLElement;
@@ -194,10 +184,7 @@ function applyFilters() {
   const search = (document.getElementById('filter-search') as HTMLInputElement)?.value.trim();
   if (search) filters.search = search;
 
-  const brands = Array.from(document.querySelectorAll('#filter-brand .filter-chip.active'))
-    .map(c => (c as HTMLElement).dataset.value!)
-    .filter(Boolean);
-  if (brands.length) filters.brand = brands.join(',');
+
 
   const categories = Array.from(document.querySelectorAll('#filter-category .filter-chip.active'))
     .map(c => (c as HTMLElement).dataset.value!)

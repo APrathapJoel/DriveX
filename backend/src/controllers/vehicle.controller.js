@@ -3,6 +3,25 @@ import Booking from '../models/Booking.js';
 import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { vehicles as seedVehicles } from '../seed.js';
+
+let isAutoSeeding = false;
+async function ensureVehiclesSeeded() {
+  if (isAutoSeeding) return;
+  try {
+    const count = await Vehicle.countDocuments();
+    if (count === 0 && seedVehicles && seedVehicles.length > 0) {
+      isAutoSeeding = true;
+      console.log(`Auto-seeding ${seedVehicles.length} vehicles into database...`);
+      await Vehicle.insertMany(seedVehicles);
+      console.log('Auto-seed completed successfully!');
+    }
+  } catch (err) {
+    console.warn('Auto-seed warning:', err.message);
+  } finally {
+    isAutoSeeding = false;
+  }
+}
 
 /**
  * @desc    Get all vehicles with filtering, sorting, pagination
@@ -10,6 +29,8 @@ import asyncHandler from '../utils/asyncHandler.js';
  * @access  Public
  */
 export const getVehicles = asyncHandler(async (req, res) => {
+  await ensureVehiclesSeeded();
+
   const {
     search,
     brand,
