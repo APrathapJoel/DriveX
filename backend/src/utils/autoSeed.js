@@ -1,6 +1,6 @@
 import User from '../models/User.js';
 import Vehicle from '../models/Vehicle.js';
-import { vehicles as seedVehicles } from '../seed.js';
+import { vehicles as seedVehicles } from '../vehicleCatalog.js';
 
 let isSeeding = false;
 let seededAt = 0;

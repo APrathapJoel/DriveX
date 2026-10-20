@@ -987,4 +987,9 @@ const seed = async () => {
   }
 };
 
-seed();
+// Only run when executed directly from CLI (e.g. node src/seed.js)
+if (process.argv[1] && process.argv[1].replace(/\\/g, '/').endsWith('seed.js')) {
+  seed();
+}
+
+export { seed };
