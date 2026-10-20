@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quality Assessment Report — Software Engineering (23EC2004)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
+
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --secondary: #0ea5e9;
+      --dark: #0f172a;
+      --gray-900: #111827;
+      --gray-700: #374151;
+      --gray-500: #6b7280;
+      --gray-200: #e5e7eb;
+      --gray-100: #f3f4f6;
+      --gray-50: #f9fafb;
+      --success: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--gray-900);
+      background: #f8fafc;
+      line-height: 1.6;
+      font-size: 13.5px;
+    }
+
+    .report-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 50px 60px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+    }
+
+    /* Print settings for <= 15 pages */
+    @media print {
+      body {
+        background: #ffffff;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+      .report-container {
+        padding: 0;
+        box-shadow: none;
+        max-width: 100%;
+      }
+      .page-break {
+        page-break-after: always;
+        break-after: page;
+      }
+      .no-break {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      a {
+        text-decoration: none;
+        color: var(--primary);
+      }
+    }
+
+    .cover-page {
+      min-height: 820px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 3px solid var(--primary);
+      padding: 60px 40px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #ffffff 0%, #f5f7ff 100%);
+      margin-bottom: 50px;
+    }
+
+    .cover-header {
+      text-align: center;
+    }
+
+    .course-badge {
+      display: inline-block;
+      background: rgba(79, 70, 229, 0.1);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 14px;
+      padding: 6px 18px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(79, 70, 229, 0.2);
+    }
+
+    .cover-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--dark);
+      line-height: 1.25;
+      margin-bottom: 15px;
+    }
+
+    .cover-subtitle {
+      font-size: 16px;
+      color: var(--gray-700);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .cover-meta-grid {
+      background: #ffffff;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 25px 30px;
+      margin: 30px 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px 30px;
+    }
+
+    .meta-item strong {
+      display: block;
+      font-size: 11px;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .meta-item span {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .cover-footer {
+      text-align: center;
+      border-top: 1px solid var(--gray-200);
+      padding-top: 20px;
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+
+    h2.section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--dark);
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 6px;
+      margin-top: 35px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h3.subsection-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-top: 20px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin-bottom: 10px;
+      color: var(--gray-700);
+    }
+
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 12px;
+      color: var(--gray-700);
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+      font-size: 12px;
+    }
+
+    table th, table td {
+      border: 1px solid var(--gray-200);
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    table th {
+      background: #f1f5f9;
+      color: var(--dark);
+      font-weight: 700;
+    }
+
+    table tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-high { background: #fee2e2; color: #dc2626; }
+    .badge-medium { background: #fef3c7; color: #d97706; }
+    .badge-pass { background: #dcfce7; color: #15803d; }
+
+    .screenshot-box {
+      margin: 18px 0;
+      text-align: center;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 10px;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .screenshot-box img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .screenshot-caption {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--gray-500);
+      margin-top: 8px;
+    }
+
+    .diagram-pre {
+      background: #0f172a;
+      color: #38bdf8;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 11.5px;
+      line-height: 1.4;
+      overflow-x: auto;
+      margin: 14px 0;
+    }
+
+    .callout {
+      border-left: 4px solid var(--primary);
+      background: #eef2ff;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 14px 0;
+      font-size: 12.5px;
+    }
+
+    .toc {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 20px 25px;
+      margin-bottom: 30px;
+    }
+
+    .toc ul {
+      list-style-type: none;
+      margin-left: 0;
+    }
+
+    .toc li {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dotted var(--gray-200);
+      padding: 4px 0;
+    }
+
+    .toc li span.page-num {
+      font-weight: 600;
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+<div class="report-container">
+
+  <!-- ==================== COVER PAGE ==================== -->
+  <div class="cover-page page-break">
+    <div class="cover-header">
+      <div class="course-badge">Quality Assessment: Software Engineering — 23EC2004</div>
+      <h1 class="cover-title">Vehicle Rental Web Application (DriveX)</h1>
+      <p class="cover-subtitle">
+        A Cloud-Native Self-Drive Vehicle Rental Platform with AI Neural KYC Verification, Transparent Pricing Caps, and Multi-Service Architecture
+      </p>
+    </div>
+
+    <div class="cover-meta-grid">
+      <div class="meta-item">
+        <strong>Course Code & Name</strong>
+        <span>23EC2004 — Software Engineering</span>
+      </div>
+      <div class="meta-item">
+        <strong>Software Title</strong>
+        <span>Vehicle Rental Web Application (No. 14)</span>
+      </div>
+      <div class="meta-item">
+        <strong>Student Name</strong>
+        <span>Prathap</span>
+      </div>
+      <div class="meta-item">
+        <strong>Registration Number</strong>
+        <span>URK24EC8009</span>
+      </div>
+      <div class="meta-item">
+        <strong>Team Formation</strong>
+        <span>Single Member Project (SELF)</span>
+      </div>
+      <div class="meta-item">
+        <strong>Submission Date</strong>
+        <span>October 20, 2026</span>
+      </div>
+      <div class="meta-item">
+        <strong>Live Production URL</strong>
+        <span><a href="https://drivex-inky-kappa.vercel.app" target="_blank">drivex-inky-kappa.vercel.app</a></span>
+      </div>
+      <div class="meta-item">
+        <strong>GitHub Repository</strong>
+        <span><a href="https://github.com/APrathapJoel/DriveX.git" target="_blank">APrathapJoel/DriveX.git</a></span>
+      </div>
+    </div>
+
+    <div class="cover-footer">
+      <p>Demonstrating the Complete Software Engineering Lifecycle (SRS &rarr; UML &rarr; Architecture &rarr; Agile XP &rarr; Web Development &rarr; Testing &rarr; Live Demonstration)</p>
+    </div>
+  </div>
+
+  <!-- ==================== TABLE OF CONTENTS ==================== -->
+  <div class="toc no-break">
+    <h3 style="margin-bottom:12px; font-family:'Outfit',sans-serif; color:var(--dark);">Report Table of Contents</h3>
+    <ul>
+      <li><span>1. Title & Executive Summary</span> <span class="page-num">Page 2</span></li>
+      <li><span>2. Observation Report</span> <span class="page-num">Page 2</span></li>
+      <li><span>3. Results — Image Screenshots</span> <span class="page-num">Page 3</span></li>
+      <li><span>4. Video Demonstration & Test Artifacts</span> <span class="page-num">Page 5</span></li>
+      <li><span>5. Problem Identification & Stakeholder Feasibility</span> <span class="page-num">Page 5</span></li>
+      <li><span>6. Requirements Specification (SRS)</span> <span class="page-num">Page 6</span></li>
+      <li><span>7. User Stories & Product Backlog</span> <span class="page-num">Page 7</span></li>
+      <li><span>8. Use Case Modeling & Diagram</span> <span class="page-num">Page 8</span></li>
+      <li><span>9. Class, Sequence & Activity Diagrams (UML)</span> <span class="page-num">Page 9</span></li>
+      <li><span>10. System Architecture & Database Design</span> <span class="page-num">Page 11</span></li>
+      <li><span>11. XP / Scrum Planning & Sprint Schedule</span> <span class="page-num">Page 12</span></li>
+      <li><span>12. Web Application Implementation & REST APIs</span> <span class="page-num">Page 13</span></li>
+      <li><span>13. Software Testing Lifecycle (Unit, Integration, System)</span> <span class="page-num">Page 14</span></li>
+      <li><span>14. Final Live Demonstration & Maintenance Plan</span> <span class="page-num">Page 15</span></li>
+    </ul>
+  </div>
+
+  <!-- ==================== SECTION 1: TITLE ==================== -->
+  <h2 class="section-title">1. Project Title & Executive Summary</h2>
+  <p>
+    <strong>Project Title:</strong> Vehicle Rental Web Application (DriveX / DriveR)<br>
+    <strong>System Description:</strong> DriveX is a full-stack, cloud-native self-drive vehicle rental web platform engineered to eliminate traditional friction in automotive rentals. It provides real-time fleet browsing across 38+ vehicles, instantaneous category segregation, mathematical pricing safeguards against the 20-hour rental paradox, an interactive AI neural KYC document upload simulator (with dual-side support and live OCR review), and an integrated 3D-Secure payment gateway simulator deployed on a multi-service cloud architecture.
+  </p>
+
+  <!-- ==================== SECTION 2: OBSERVATION ==================== -->
+  <h2 class="section-title">2. Observation Report</h2>
+  <p>
+    During the complete execution of the Software Engineering lifecycle, four foundational observations were documented across system design, algorithmic accuracy, and serverless runtime environments:
+  </p>
+  <ul>
+    <li>
+      <strong>Algorithmic Pricing Paradox:</strong> Unconstrained combination of daily and hourly rates ($20 \times \text{hourlyRate}$) caused partial-day rentals to exceed a full 24-hour daily price. Resolving this required enforcing a mathematical cap: $\min(\text{hours} \times \text{hourlyRate}, \text{dailyRate})$ in the core pricing engine.
+    </li>
+    <li>
+      <strong>Serverless Ephemeral Storage & Cold Starts:</strong> Deploying on modern cloud serverless environments (Vercel Lambda) causes local filesystem writes to reset between execution contexts. Ensuring data survivability required redirecting file uploads to <code>/tmp</code> and building dynamic seeders alongside stateless JWT payload session recovery.
+    </li>
+    <li>
+      <strong>Multi-Service SPA Refresh Resilience:</strong> In multi-service deployments (Express backend + Vite frontend), direct URL refreshes on nested client-side routes (e.g., <code>/dashboard/bookings</code>, <code>/kyc</code>) return 404 NOT_FOUND errors unless service-level catch-all rewrites (<code>/(.*) &rarr; /index.html</code>) and static <code>404.html</code> fallbacks are actively configured.
+    </li>
+    <li>
+      <strong>KYC & Document Upload Realism:</strong> Traditional mock interfaces relying solely on static cards fail user trust tests. Implementing a genuine drag-and-drop dropzone supporting JPG, PNG, and PDF, coupled with front/back side toggles and editable OCR fields, elevated system realism to commercial industry benchmarks.
+    </li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 3: RESULTS - SCREENSHOTS ==================== -->
+  <h2 class="section-title">3. Results — Image Screenshots</h2>
+
+  <div class="screenshot-box no-break">
+    <img src="screenshots/home_page.png" alt="Home Page Hero and Fleet Showcase">
+    <div class="screenshot-caption">Figure 3.1: Live Production Home Page with Fleet Segregation Pills and Real-Time Counters</div>
+  </div>
+
+  <div class="screenshot-box no-break">
+    <img src="screenshots/vehicles_catalog.png" alt="Vehicle Catalog Filter Interface">
+    <div class="screenshot-caption">Figure 3.2: Fleet Browse Interface with Multi-Attribute Filters (Category, Transmission, Fuel, Price Slider)</div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <div class="screenshot-box no-break">
+    <img src="screenshots/kyc_upload_dropzone.png" alt="Interactive Document Upload Dropzone">
+    <div class="screenshot-caption">Figure 3.3: Interactive KYC Document Upload Dropzone with Front/Back Side Selectors and Drag & Drop</div>
+  </div>
+
+  <div class="screenshot-box no-break">
+    <img src="screenshots/kyc_document_preview.png" alt="Live Document Preview and OCR Inspection">
+    <div class="screenshot-caption">Figure 3.4: Live Document Inspection Viewport with High-Resolution Preview and Editable OCR Extracted Fields</div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <div class="screenshot-box no-break">
+    <img src="screenshots/kyc_certificate.png" alt="Verified Driver Pass Certificate">
+    <div class="screenshot-caption">Figure 3.5: Tamper-Evident Verified DriveR Pass Certificate Issued Post AI Biometric Verification</div>
+  </div>
+
+  <div class="screenshot-box no-break">
+    <img src="screenshots/payment_gateway.png" alt="Interactive Payment Gateway Simulator">
+    <div class="screenshot-caption">Figure 3.6: Multi-Method Checkout Simulator Featuring 3D Interactive Card, UPI QR Code, and 3DS OTP Modal</div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 4: VIDEO DEMONSTRATION ==================== -->
+  <h2 class="section-title">4. Video of the Working Web App</h2>
+  <p>
+    High-resolution recorded video walkthroughs demonstrating full application responsiveness, document upload, and booking transactions are available within the repository:
+  </p>
+  <ul>
+    <li><strong>Document Upload & AI KYC Video:</strong> <code>docs/screenshots/kyc_document_upload_test_1792490917657.webp</code></li>
+    <li><strong>End-to-End Payment & Checkout Video:</strong> <code>docs/screenshots/payment_kyc_demo_1792484855999.webp</code></li>
+    <li><strong>Sub-Route SPA Refresh Resilience Video:</strong> <code>docs/screenshots/refresh_fix_demo_1792486452803.webp</code></li>
+    <li><strong>Live Production Access:</strong> <a href="https://drivex-inky-kappa.vercel.app" target="_blank">https://drivex-inky-kappa.vercel.app</a></li>
+  </ul>
+
+  <!-- ==================== SECTION 5: PROBLEM IDENTIFICATION ==================== -->
+  <h2 class="section-title">5. Problem Identification & Feasibility Study</h2>
+  <div class="callout">
+    <strong>Core Problem Statement:</strong> Customers seeking self-drive car rentals in India encounter friction due to opaque price inflation, physical paperwork queues at rental hubs, delayed security deposit refunds, and clunky legacy web interfaces.
+  </div>
+  <ul>
+    <li><strong>Customer Stakeholders:</strong> Require instant mobile-friendly vehicle discovery, upfront pricing without hidden charges, rapid digital license verification, and zero security deposit friction.</li>
+    <li><strong>Fleet Manager Stakeholders:</strong> Require real-time visibility over fleet availability, automated compliance checking, and risk management telemetry.</li>
+    <li><strong>System Boundary:</strong> Covers online customer onboarding, fleet search, booking management, KYC verification simulation, payment gateway simulation, and administrative oversight.</li>
+  </ul>
+  <p><strong>Feasibility Evaluation:</strong></p>
+  <ul>
+    <li><strong>Technical Feasibility:</strong> Achieved using TypeScript, Vite, Node.js, Express, and Vercel Multi-Service serverless infrastructure.</li>
+    <li><strong>Economic Feasibility:</strong> 100% free and open-source software (FOSS) stack with zero commercial runtime license overhead.</li>
+    <li><strong>Operational Feasibility:</strong> Self-service digital flow eliminates the operational overhead of physical rental counters.</li>
+  </ul>
+
+  <!-- ==================== SECTION 6: SRS ==================== -->
+  <h2 class="section-title">6. Software Requirements Specification (SRS)</h2>
+  
+  <h3 class="subsection-title">6.1 Functional Requirements (FR)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 15%;">Req ID</th>
+        <th style="width: 35%;">Requirement Title</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>FR-01</strong></td>
+        <td>User Authentication</td>
+        <td>Secure signup/login with bcrypt password hashing and signed JWT session token delivery.</td>
+      </tr>
+      <tr>
+        <td><strong>FR-02</strong></td>
+        <td>Fleet Discovery & Search</td>
+        <td>Dynamic filtering across 38+ vehicles by Category, Fuel, Transmission, and Price Slider.</td>
+      </tr>
+      <tr>
+        <td><strong>FR-03</strong></td>
+        <td>Mathematical Pricing Engine</td>
+        <td>Calculate rental costs with automated daily caps to prevent the 20-hour pricing anomaly.</td>
+      </tr>
+      <tr>
+        <td><strong>FR-04</strong></td>
+        <td>Document Upload & KYC</td>
+        <td>Accept Driving License, Aadhaar, and Passport (JPG, PNG, PDF &le; 5MB) for front/back sides.</td>
+      </tr>
+      <tr>
+        <td><strong>FR-05</strong></td>
+        <td>Live OCR Review</td>
+        <td>Display document preview alongside editable extracted fields (DL No., Name, DOB, Expiry).</td>
+      </tr>
+      <tr>
+        <td><strong>FR-06</strong></td>
+        <td>Payment Simulation</td>
+        <td>Simulate UPI QR codes, 3D card inputs, Net Banking, and 3D Secure OTP verification.</td>
+      </tr>
+      <tr>
+        <td><strong>FR-07</strong></td>
+        <td>Customer Dashboard</td>
+        <td>Allow tracking of active bookings, verified driver pass status, and invoice downloads.</td>
+      </tr>
+      <tr>
+        <td><strong>FR-08</strong></td>
+        <td>Admin Fleet Operations</td>
+        <td>Provide administrator control for inventory management and user verification queues.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="subsection-title">6.2 Non-Functional Requirements (NFR)</h3>
+  <ul>
+    <li><strong>NFR-01 (Performance):</strong> First Contentful Paint (FCP) &lt; 1.2s; API endpoint latency &lt; 300ms.</li>
+    <li><strong>NFR-02 (Security):</strong> 256-bit cryptographic JWT authentication; strict role-based access control (RBAC).</li>
+    <li><strong>NFR-03 (Availability):</strong> 99.9% availability via redundant Vercel serverless edge deployment.</li>
+    <li><strong>NFR-04 (Responsiveness):</strong> 100% fluid responsive layout across desktop, tablet, and mobile screens.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 7: USER STORIES ==================== -->
+  <h2 class="section-title">7. User Stories / Product Backlog</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>User Story Statement</th>
+        <th>Priority</th>
+        <th>Pts</th>
+        <th>Acceptance Criteria</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>US-01</strong></td>
+        <td>As a customer, I want to view all vehicles directly on the home page so that I can immediately browse available models.</td>
+        <td><span class="badge badge-high">High</span></td>
+        <td>5</td>
+        <td>Given the home page, when scrolled to fleet section, all 38+ cars render with category pills.</td>
+      </tr>
+      <tr>
+        <td><strong>US-02</strong></td>
+        <td>As a driver, I want to upload front and back photos of my Driving License so that my identity is verified digitally.</td>
+        <td><span class="badge badge-high">High</span></td>
+        <td>8</td>
+        <td>Given the KYC page, dragging a file shows real-time preview and extracted OCR fields.</td>
+      </tr>
+      <tr>
+        <td><strong>US-03</strong></td>
+        <td>As a customer, I want partial-day bookings to never exceed the daily rate so that pricing remains fair.</td>
+        <td><span class="badge badge-high">High</span></td>
+        <td>5</td>
+        <td>Given a 20-hour booking, the calculated price is capped at the 24-hour full day rate.</td>
+      </tr>
+      <tr>
+        <td><strong>US-04</strong></td>
+        <td>As a customer, I want to pay using UPI QR or Credit Card so that my booking is confirmed instantly.</td>
+        <td><span class="badge badge-high">High</span></td>
+        <td>5</td>
+        <td>Entering card details and OTP 123456 transitions booking to confirmed with an invoice receipt.</td>
+      </tr>
+      <tr>
+        <td><strong>US-05</strong></td>
+        <td>As an admin, I want to inspect user verification statuses so that only valid drivers operate the fleet.</td>
+        <td><span class="badge badge-medium">Medium</span></td>
+        <td>5</td>
+        <td>Admin dashboard displays list of users with VERIFIED/PENDING status badges.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ==================== SECTION 8: USE CASE DIAGRAM ==================== -->
+  <h2 class="section-title">8. Use Case Modeling</h2>
+  <p>
+    The system defines three primary actors: <strong>Customer/Driver</strong>, <strong>System Administrator</strong>, and <strong>External Systems (Parivahan / Payment Gateway)</strong>.
+  </p>
+  <div class="diagram-pre">
+                   USE CASE MODEL — DRIVEX VEHICLE RENTAL SYSTEM
+  
+  [Customer / Driver] ───┬──&gt; (UC-1: Register & Authenticate Account)
+                         ├──&gt; (UC-2: Browse & Filter Vehicle Fleet)
+                         ├──&gt; (UC-3: Calculate Price & Reserve Vehicle)
+                         ├──&gt; (UC-4: Upload KYC Document [Front/Back]) ──&gt; [Parivahan DB]
+                         ├──&gt; (UC-5: Review & Confirm Extracted OCR Data)
+                         ├──&gt; (UC-6: Execute Payment via UPI / Card) ────&gt; [Payment Gateway]
+                         └──&gt; (UC-7: View Booking History & Digital Pass)
+  
+  [System Admin] ────────┬──&gt; (UC-8: Manage Fleet Inventory & Status)
+                         ├──&gt; (UC-9: Inspect Verification Queue)
+                         └──&gt; (UC-10: Review Financial Analytics)
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 9: UML DIAGRAMS ==================== -->
+  <h2 class="section-title">9. Class, Sequence & Activity Diagrams (UML)</h2>
+
+  <h3 class="subsection-title">9.1 Class Diagram (Structural Domain Model)</h3>
+  <div class="diagram-pre">
++──────────────────────────+             +──────────────────────────+
+│          User            │             │         Vehicle          │
++──────────────────────────+             +──────────────────────────+
+│ - _id: String            │             │ - _id: String            │
+│ - name: String           │             │ - brand: String          │
+│ - email: String          │             │ - model: String          │
+│ - password: String (hash)│             │ - category: String       │
+│ - role: String           │             │ - pricePerDay: Number    │
+│ - verificationStatus: Str│             │ - pricePerHour: Number   │
+│ - isVerified: Boolean    │             │ - transmission: String   │
++──────────────────────────+             │ - fuelType: String       │
+│ + comparePassword()      │             │ - available: Boolean     │
++────────────┬─────────────+             +────────────┬─────────────+
+             │ 1                                      │ 1
+             │ creates                                │ reserved_in
+             ▼ 0..*                                   ▼ 0..*
++──────────────────────────+             +──────────────────────────+
+│         Booking          │ 1         1 │   IdentityVerification   │
++──────────────────────────+────────────&gt;+──────────────────────────+
+│ - _id: String            │             │ - _id: String            │
+│ - startDate: Date        │             │ - documentType: String   │
+│ - endDate: Date          │             │ - documentNumber: String │
+│ - totalHours: Number     │             │ - documentPath: String   │
+│ - pricing: Object        │             │ - status: String         │
+│ - status: String         │             +──────────────────────────+
+│ - paymentStatus: String  │
++──────────────────────────+
+  </div>
+
+  <h3 class="subsection-title">9.2 Sequence Diagram (End-to-End Rental Journey)</h3>
+  <div class="diagram-pre">
+Customer             Vite SPA Frontend          Pricing Service       Verification API       Payment Gateway
+   │                         │                         │                     │                      │
+   │── 1. Select Car & Dates&gt;│                         │                     │                      │
+   │                         │── 2. Request Quote ────&gt;│                     │                      │
+   │                         │&lt;── 3. Return Capped Fee ─│                     │                      │
+   │&lt;── 4. Render Breakdown ─│                         │                     │                      │
+   │── 5. Confirm Booking ──&gt;│                                               │                      │
+   │                         │── 6. Create Pending Booking (DB)              │                      │
+   │── 7. Upload ID File ───&gt;│                                               │                      │
+   │                         │── 8. POST /api/verification/upload (FormData)─&gt;│                      │
+   │                         │&lt;── 9. OCR Extracted Fields & AI Approval ──────│                      │
+   │&lt;── 10. Display Pass ────│                                               │                      │
+   │── 11. Enter Card / OTP &gt;│                                                                      │
+   │                         │── 12. Process Transaction ──────────────────────────────────────────&gt;│
+   │                         │&lt;── 13. Settlement Confirmed (200 OK) ─────────────────────────────────│
+   │&lt;── 14. Keyless Pass ────│
+  </div>
+
+  <h3 class="subsection-title">9.3 Activity Diagram (Workflow Execution)</h3>
+  <p>
+    <strong>Workflow Stages:</strong> Landing &rarr; Vehicle Selection &rarr; Dynamic Price Estimation &rarr; Authentication Guard &rarr; KYC Document Drag & Drop &rarr; OCR Review &rarr; Biometric Liveness Simulation &rarr; Payment Gateway Selection &rarr; Digital Pass & Key Handover.
+  </p>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 10: ARCHITECTURE & UI ==================== -->
+  <h2 class="section-title">10. System Architecture & Database Design</h2>
+
+  <h3 class="subsection-title">10.1 3-Tier Layered Architecture</h3>
+  <div class="diagram-pre">
++───────────────────────────────────────────────────────────────────────────────+
+│                       PRESENTATION TIER (Client SPA)                          │
+│   TypeScript 5.8 · Vite 8.3.3 · Vanilla CSS3 Design Tokens · HTML5 History    │
++───────────────────────────────────────┬───────────────────────────────────────+
+                                        │ HTTPS / JSON / Multipart
++───────────────────────────────────────▼───────────────────────────────────────+
+│                    APPLICATION SERVICE TIER (Express API)                     │
+│   Node.js 20 · Express MVC · JWT Auth Guard · Multer /tmp Upload Handler     │
++───────────────────────────────────────┬───────────────────────────────────────+
+                                        │ Data Engine Operations
++───────────────────────────────────────▼───────────────────────────────────────+
+│                     DATA PERSISTENCE TIER (Storage Layer)                     │
+│   Document Collection Storage · Automatic Cold-Start Bootstrap Seeder        │
++───────────────────────────────────────────────────────────────────────────────+
+  </div>
+
+  <h3 class="subsection-title">10.2 Database Design & Schema Entities</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Collection</th>
+        <th>Key Attributes</th>
+        <th>Constraints & Indexes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>users</strong></td>
+        <td><code>_id, name, email, password, role, verificationStatus</code></td>
+        <td><code>email</code> unique; bcrypt hashed; role in ('customer', 'admin')</td>
+      </tr>
+      <tr>
+        <td><strong>vehicles</strong></td>
+        <td><code>_id, brand, model, category, pricePerDay, available</code></td>
+        <td><code>category</code> indexed; pricePerDay &gt; 0; seats &ge; 2</td>
+      </tr>
+      <tr>
+        <td><strong>bookings</strong></td>
+        <td><code>_id, userId, vehicleId, startDate, endDate, pricing, status</code></td>
+        <td>Foreign keys to <code>users</code> & <code>vehicles</code>; overlap protected</td>
+      </tr>
+      <tr>
+        <td><strong>verifications</strong></td>
+        <td><code>_id, userId, documentType, documentNumber, status</code></td>
+        <td><code>documentType</code> in ('drivers_licence', 'aadhaar', 'passport')</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ==================== SECTION 11: XP / SCRUM PLANNING ==================== -->
+  <h2 class="section-title">11. XP / Scrum Planning & Sprint Iterations</h2>
+  <p>
+    The project followed Agile Scrum principles combined with Extreme Programming (XP) practices across four distinct sprints:
+  </p>
+  <ul>
+    <li><strong>Sprint 1 (Days 1–5): Core Foundation & Fleet Catalog</strong> — Established Express REST skeleton, Vite frontend scaffolding, CSS token architecture, and seeded 38+ verified vehicle models.</li>
+    <li><strong>Sprint 2 (Days 6–10): Booking Logic & The 20-Hour Pricing Fix</strong> — Developed reservation state machines and eliminated the mathematical paradox where 20 hours exceeded 1 full day.</li>
+    <li><strong>Sprint 3 (Days 11–15): Payment Simulation & AI KYC Dropzone</strong> — Engineered the drag-and-drop document upload system with front/back side support, live OCR extraction, and 3DS payment gateway.</li>
+    <li><strong>Sprint 4 (Days 16–20): Cloud Serverless Deployment & SPA Fix</strong> — Configured Vercel multi-service routing, resolved sub-route refresh 404s, and verified production stability.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 12: IMPLEMENTATION ==================== -->
+  <h2 class="section-title">12. Web Application Implementation</h2>
+
+  <h3 class="subsection-title">12.1 Core API Routes Specification</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Method</th>
+        <th>Path</th>
+        <th>Access</th>
+        <th>Function & Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/auth/login</code></td>
+        <td>Public</td>
+        <td>Authenticates user credentials and returns JWT Bearer token.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/vehicles</code></td>
+        <td>Public</td>
+        <td>Fetches catalog of 38+ vehicles with category and fuel filters.</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/bookings</code></td>
+        <td>Private</td>
+        <td>Creates new vehicle reservation with calculated daily capped pricing.</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/verification/upload</code></td>
+        <td>Private</td>
+        <td>Uploads ID file via Multipart FormData and triggers AI OCR inspection.</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/bookings/:id/pay</code></td>
+        <td>Private</td>
+        <td>Processes transaction settlement and transitions booking to confirmed.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ==================== SECTION 13: TESTING LIFECYCLE ==================== -->
+  <h2 class="section-title">13. Software Testing Lifecycle</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Test ID</th>
+        <th>Type</th>
+        <th>Test Scenario & Inputs</th>
+        <th>Expected Output</th>
+        <th>Actual Output</th>
+        <th>Result</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>TC-01</strong></td>
+        <td>Unit</td>
+        <td>20-Hour Price Calculation (Rate: ₹1,500/day, ₹100/hr)</td>
+        <td>Fee capped at ₹1,500 (not ₹2,000)</td>
+        <td>₹1,500 calculated</td>
+        <td><span class="badge badge-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>TC-02</strong></td>
+        <td>Unit</td>
+        <td>bcrypt Password Hash Verification</td>
+        <td>Correct password returns true; wrong returns false</td>
+        <td>Verified match</td>
+        <td><span class="badge badge-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>TC-03</strong></td>
+        <td>Integration</td>
+        <td>Multipart Document Upload to <code>/api/verification/upload</code></td>
+        <td>File saved in <code>/tmp</code>; user verified in DB</td>
+        <td>User verified status</td>
+        <td><span class="badge badge-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>TC-04</strong></td>
+        <td>System</td>
+        <td>Browser Hard Refresh on <code>/dashboard/bookings</code></td>
+        <td>Returns HTTP 200 via rewrite; no 404</td>
+        <td>HTTP 200 OK</td>
+        <td><span class="badge badge-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>TC-05</strong></td>
+        <td>UAT</td>
+        <td>Complete End-to-End Booking & Verification Flow</td>
+        <td>Pass issued and booking confirmed &lt; 45s</td>
+        <td>Successfully booked</td>
+        <td><span class="badge badge-pass">PASS</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ==================== SECTION 14: MAINTENANCE & FUTURE ENHANCEMENTS ==================== -->
+  <h2 class="section-title">14. Maintenance & Future Enhancements</h2>
+  <ol>
+    <li><strong>IoT Smart-Box Keyless Telematics:</strong> Incorporate cellular hardware dongles allowing customers to unlock reserved car doors directly via their smartphone browser.</li>
+    <li><strong>Automated FASTag Toll Reconciliation:</strong> Query NETC toll gateway APIs to automatically deduct highway toll expenses from customer cards upon trip completion.</li>
+    <li><strong>Computer Vision Damage Inspection:</strong> Pre-trip and post-trip 4-angle vehicle photo uploads using machine learning to detect pre-existing scratches and protect drivers.</li>
+    <li><strong>Distributed Cloud Database Scaling:</strong> Migrate storage layers to managed MongoDB Atlas with multi-region failover.</li>
+  </ol>
+
+  <div class="callout" style="margin-top:30px; text-align:center;">
+    <strong>Software Engineering Quality Assessment (23EC2004) Project Complete</strong><br>
+    Developed & Documented by <strong>Prathap (URK24EC8009)</strong> · October 2026
+  </div>
+
+</div>
+
+</body>
+</html>
