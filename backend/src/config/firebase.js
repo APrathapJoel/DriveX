@@ -1,15 +1,31 @@
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 import config from './index.js';
 
+const require = createRequire(import.meta.url);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let firestoreInstance = null;
 let isLive = false;
+
+function getFirebaseAdmin() {
+  try {
+    const app = require('firebase-admin/app');
+    const firestore = require('firebase-admin/firestore');
+    return {
+      initializeApp: app.initializeApp,
+      cert: app.cert,
+      getApps: app.getApps,
+      getAdminFirestore: firestore.getFirestore,
+    };
+  } catch (err) {
+    console.warn(`[Firebase] Notice: firebase-admin module could not be loaded (${err.message}). Using local store simulation.`);
+    return null;
+  }
+}
 
 // Check possible paths for serviceAccountKey.json
 const possibleServiceAccountPaths = [
@@ -28,6 +44,12 @@ export function initFirebase() {
     return { db: firestoreInstance, isLive };
   }
 
+  const admin = getFirebaseAdmin();
+  if (!admin) {
+    isLive = false;
+    return { db: null, isLive: false };
+  }
+
   // 1. Check for Service Account JSON file
   for (const filePath of possibleServiceAccountPaths) {
     if (fs.existsSync(filePath)) {
@@ -35,12 +57,12 @@ export function initFirebase() {
         const fileContent = fs.readFileSync(filePath, 'utf8');
         const serviceAccount = JSON.parse(fileContent);
         
-        if (!getApps().length) {
-          initializeApp({
-            credential: cert(serviceAccount),
+        if (!admin.getApps().length) {
+          admin.initializeApp({
+            credential: admin.cert(serviceAccount),
           });
         }
-        firestoreInstance = getAdminFirestore();
+        firestoreInstance = admin.getAdminFirestore();
         isLive = true;
         console.log(`\n🔥 [Firebase] Successfully connected to Google Cloud Firestore (Project: ${serviceAccount.project_id || 'Configured'})\n`);
         return { db: firestoreInstance, isLive };
@@ -53,16 +75,16 @@ export function initFirebase() {
   // 2. Check for environment variables
   if (config.firebase.projectId && config.firebase.clientEmail && config.firebase.privateKey) {
     try {
-      if (!getApps().length) {
-        initializeApp({
-          credential: cert({
+      if (!admin.getApps().length) {
+        admin.initializeApp({
+          credential: admin.cert({
             projectId: config.firebase.projectId,
             clientEmail: config.firebase.clientEmail,
             privateKey: config.firebase.privateKey,
           }),
         });
       }
-      firestoreInstance = getAdminFirestore();
+      firestoreInstance = admin.getAdminFirestore();
       isLive = true;
       console.log(`\n🔥 [Firebase] Successfully connected to Google Cloud Firestore via env credentials (Project: ${config.firebase.projectId})\n`);
       return { db: firestoreInstance, isLive };
@@ -74,12 +96,12 @@ export function initFirebase() {
   // 3. Check for Firestore Emulator
   if (process.env.FIRESTORE_EMULATOR_HOST) {
     try {
-      if (!getApps().length) {
-        initializeApp({
+      if (!admin.getApps().length) {
+        admin.initializeApp({
           projectId: config.firebase.projectId || 'drivex-local',
         });
       }
-      firestoreInstance = getAdminFirestore();
+      firestoreInstance = admin.getAdminFirestore();
       isLive = true;
       console.log(`\n🔥 [Firebase] Connected to Firestore Emulator at ${process.env.FIRESTORE_EMULATOR_HOST}\n`);
       return { db: firestoreInstance, isLive };
@@ -88,15 +110,10 @@ export function initFirebase() {
     }
   }
 
-  // 4. Fallback local store (persists to backend/data/firestore_data.json)
+  // 4. Fallback local store
   console.log(`\n========================================================================`);
   console.log(`🔥 [Firebase Notice] No Google Cloud Firebase credentials detected.`);
   console.log(`   Running with local file-backed Firestore simulation (zero crash).`);
-  console.log(`   👉 To connect your live Firebase project:`);
-  console.log(`      1. Download your service account key from Firebase Console`);
-  console.log(`         (Project Settings > Service Accounts > Generate new private key)`);
-  console.log(`      2. Save it as 'backend/serviceAccountKey.json'`);
-  console.log(`      3. Or set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY in .env`);
   console.log(`========================================================================\n`);
 
   isLive = false;
