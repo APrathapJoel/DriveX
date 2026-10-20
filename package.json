@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "DriveR - Premium Car Rental Platform",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && npm run dev",

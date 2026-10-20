@@ -5,7 +5,9 @@ import { getFirestore, isLiveFirestore, disableLiveFirestore } from '../config/f
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DATA_FILE = path.resolve(__dirname, '..', '..', 'data', 'firestore_data.json');
+const DATA_FILE = process.env.VERCEL
+  ? path.join('/tmp', 'firestore_data.json')
+  : path.resolve(__dirname, '..', '..', 'data', 'firestore_data.json');
 
 // Graceful fallback runner for Firebase
 export async function executeWithFirestoreFallback(liveAction, fallbackAction) {

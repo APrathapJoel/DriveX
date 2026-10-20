@@ -4,6 +4,9 @@
   "description": "DriveR Car Rental Platform - Backend API",
   "main": "src/server.js",
   "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",

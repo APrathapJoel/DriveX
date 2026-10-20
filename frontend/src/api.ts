@@ -50,13 +50,25 @@ class ApiClient {
     }
 
     const response = await fetch(`${API_BASE}${endpoint}`, config);
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new ApiError(data.message || 'Something went wrong', response.status, data.errors);
+    let data: Record<string, any>;
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      try {
+        data = await response.json();
+      } catch {
+        const text = await response.text();
+        data = { message: text };
+      }
+    } else {
+      const text = await response.text();
+      data = { message: text || `Server error (${response.status})` };
     }
 
-    return data;
+    if (!response.ok) {
+      throw new ApiError(data.message || `Request failed (${response.status})`, response.status, data.errors);
+    }
+
+    return data as T;
   }
 
   get<T>(endpoint: string) {
