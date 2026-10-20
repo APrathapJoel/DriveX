@@ -11,7 +11,13 @@ class UserModelInstance extends ModelInstance {
 
   generateToken() {
     return jwt.sign(
-      { id: this._id || this.id, role: this.role },
+      {
+        id: this._id || this.id,
+        role: this.role,
+        email: this.email,
+        name: this.name,
+        isVerified: this.isVerified,
+      },
       config.jwt.secret,
       { expiresIn: config.jwt.expire }
     );

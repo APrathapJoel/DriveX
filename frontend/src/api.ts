@@ -20,6 +20,11 @@ interface RequestOptions {
 
 class ApiClient {
   private token: string | null = null;
+  private onUnauthorized?: () => void;
+
+  setOnUnauthorized(cb: () => void) {
+    this.onUnauthorized = cb;
+  }
 
   setToken(token: string | null) {
     this.token = token;
@@ -65,6 +70,9 @@ class ApiClient {
     }
 
     if (!response.ok) {
+      if (response.status === 401 && !endpoint.includes('/auth/login') && !endpoint.includes('/auth/register')) {
+        this.onUnauthorized?.();
+      }
       throw new ApiError(data.message || `Request failed (${response.status})`, response.status, data.errors);
     }
 

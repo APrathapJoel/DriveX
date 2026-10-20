@@ -332,7 +332,15 @@ function initBookingForm(vehicleId: string) {
       showToast('Booking created successfully! 🎉', 'success');
       router.navigate('/dashboard/bookings');
     } catch (err: any) {
-      showToast(err.message || 'Booking failed', 'error');
+      if (err.status === 401 || err.message?.includes('User no longer exists') || err.message?.includes('Not authorized')) {
+        auth.handleUnauthorized();
+        showToast('Your session has expired. Please log in or sign up to complete your booking.', 'warning');
+        setTimeout(() => {
+          router.navigate('/login');
+        }, 1200);
+      } else {
+        showToast(err.message || 'Booking failed', 'error');
+      }
     } finally {
       bookBtn.innerHTML = 'Book Now';
       bookBtn.removeAttribute('disabled');

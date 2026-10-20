@@ -28,6 +28,9 @@ class AuthStore {
   private listeners: AuthChangeCallback[] = [];
 
   constructor() {
+    // Listen for 401s from API client to clear invalid credentials
+    api.setOnUnauthorized(() => this.handleUnauthorized());
+
     // Restore from localStorage
     const stored = localStorage.getItem('driver_user') || localStorage.getItem('drivex_user');
     const token = localStorage.getItem('driver_token') || localStorage.getItem('drivex_token');
@@ -39,6 +42,12 @@ class AuthStore {
         this.clearStorage();
       }
     }
+  }
+
+  handleUnauthorized() {
+    this.user = null;
+    this.clearStorage();
+    this.notify();
   }
 
   getUser(): User | null {

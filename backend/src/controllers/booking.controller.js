@@ -6,6 +6,7 @@ import ApiResponse from '../utils/ApiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { calculatePricing } from '../services/pricing.service.js';
 import { createNotification } from '../services/notification.service.js';
+import { ensureAutoSeeded } from '../utils/autoSeed.js';
 
 /**
  * @desc    Create booking
@@ -13,6 +14,7 @@ import { createNotification } from '../services/notification.service.js';
  * @access  Private
  */
 export const createBooking = asyncHandler(async (req, res) => {
+  await ensureAutoSeeded();
   const { vehicleId, startDate, endDate, pickupLocation } = req.body;
 
   if (!vehicleId || !startDate || !endDate) {
@@ -195,6 +197,7 @@ export const cancelBooking = asyncHandler(async (req, res) => {
  * @access  Public
  */
 export const getPriceEstimate = asyncHandler(async (req, res) => {
+  await ensureAutoSeeded();
   const { vehicleId, startDate, endDate } = req.body;
 
   if (!vehicleId || !startDate || !endDate) {

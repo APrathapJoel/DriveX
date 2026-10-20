@@ -123,6 +123,7 @@ export function initLoginPage() {
       const password = (btn as HTMLElement).dataset.password!;
       (document.getElementById('login-email') as HTMLInputElement).value = email;
       (document.getElementById('login-password') as HTMLInputElement).value = password;
+      form?.requestSubmit();
     });
   });
 }

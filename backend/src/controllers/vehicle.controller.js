@@ -3,25 +3,7 @@ import Booking from '../models/Booking.js';
 import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
-import { vehicles as seedVehicles } from '../seed.js';
-
-let isAutoSeeding = false;
-async function ensureVehiclesSeeded() {
-  if (isAutoSeeding) return;
-  try {
-    const count = await Vehicle.countDocuments();
-    if (count === 0 && seedVehicles && seedVehicles.length > 0) {
-      isAutoSeeding = true;
-      console.log(`Auto-seeding ${seedVehicles.length} vehicles into database...`);
-      await Vehicle.insertMany(seedVehicles);
-      console.log('Auto-seed completed successfully!');
-    }
-  } catch (err) {
-    console.warn('Auto-seed warning:', err.message);
-  } finally {
-    isAutoSeeding = false;
-  }
-}
+import { ensureAutoSeeded } from '../utils/autoSeed.js';
 
 /**
  * @desc    Get all vehicles with filtering, sorting, pagination
@@ -29,7 +11,7 @@ async function ensureVehiclesSeeded() {
  * @access  Public
  */
 export const getVehicles = asyncHandler(async (req, res) => {
-  await ensureVehiclesSeeded();
+  await ensureAutoSeeded();
 
   const {
     search,
@@ -111,6 +93,7 @@ export const getVehicles = asyncHandler(async (req, res) => {
  * @access  Public
  */
 export const getVehicle = asyncHandler(async (req, res) => {
+  await ensureAutoSeeded();
   const vehicle = await Vehicle.findById(req.params.id);
   if (!vehicle) {
     throw ApiError.notFound('Vehicle not found');
