@@ -75,7 +75,8 @@ export function getVehicleImageUrl(images: string[]): string {
   if (!images || images.length === 0 || images[0].includes('placeholder')) {
     return '';
   }
-  return images[0].startsWith('http') ? images[0] : `http://localhost:5000${images[0]}`;
+  const baseUrl = (import.meta.env.VITE_SERVER_URL as string) || (typeof window !== 'undefined' && window.location.hostname === 'localhost' && window.location.port === '5173' ? 'http://localhost:5000' : '');
+  return images[0].startsWith('http') ? images[0] : `${baseUrl}${images[0]}`;
 }
 
 export function generateVehicleGradient(brand: string, category: string): string {

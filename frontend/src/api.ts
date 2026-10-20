@@ -1,4 +1,16 @@
-const API_BASE = 'http://localhost:5000/api';
+const getApiBase = (): string => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL as string;
+  }
+  // Fallback for standalone local Vite dev server without proxy
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost' && window.location.port === '5173') {
+    return 'http://localhost:5000/api';
+  }
+  // Default to relative /api for Vercel multi-service rewrites
+  return '/api';
+};
+
+const API_BASE = getApiBase();
 
 interface RequestOptions {
   method?: string;
