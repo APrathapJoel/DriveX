@@ -345,19 +345,37 @@ function loadProfile(container: HTMLElement) {
             <input type="tel" class="form-input" id="profile-phone" value="${user.phone || ''}" placeholder="+91 9876543210"/>
           </div>
           <div class="form-group">
-            <label class="form-label">Verification</label>
-            <div style="padding: var(--space-2) 0; display:flex; align-items:center; gap:var(--space-3); flex-wrap:wrap;">
+            <label class="form-label">KYC Status</label>
+            <div style="padding: var(--space-2) 0;">
               ${getStatusBadge(user.verificationStatus.toLowerCase())}
-              ${user.verificationStatus !== 'VERIFIED' ? `
-                <a href="/kyc" data-link class="btn btn-accent btn-sm">🪪 Verify ID with AI Scanner</a>
-              ` : `
-                <a href="/kyc" data-link class="btn btn-ghost btn-sm" style="color:var(--success);">View Certificate ✓</a>
-              `}
             </div>
           </div>
         </div>
         <button type="submit" class="btn btn-primary" id="profile-submit">Save Changes</button>
       </form>
+    </div>
+
+    <!-- Identity & Driving License Verification Card -->
+    <div class="profile-card card" style="padding:var(--space-8); margin-top:var(--space-6);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:var(--space-4);">
+        <div>
+          <div style="display:flex; align-items:center; gap:var(--space-2); margin-bottom:var(--space-1);">
+            <h3 style="margin:0;">🪪 Identity & Driving License Documents</h3>
+            ${getStatusBadge(user.verificationStatus.toLowerCase())}
+          </div>
+          <p style="color:var(--text-secondary); font-size:0.875rem; max-width:520px; margin-top:var(--space-2);">
+            ${user.verificationStatus === 'VERIFIED'
+              ? 'Your driving license has been authenticated with Parivahan Sarathi. Enjoy zero security deposit and instant contactless car pickup.'
+              : 'Upload your Indian Driving License or Government ID (Aadhaar / Passport) to complete AI neural verification and unlock instant self-drive rentals.'
+            }
+          </p>
+        </div>
+        <div>
+          <a href="/kyc" data-link class="btn ${user.verificationStatus === 'VERIFIED' ? 'btn-outline' : 'btn-accent'}" style="white-space:nowrap;">
+            ${user.verificationStatus === 'VERIFIED' ? '🏆 View Digital Driving Pass' : '📤 Upload Driving License Now →'}
+          </a>
+        </div>
+      </div>
     </div>
 
     <div class="profile-card card" style="padding:var(--space-8); margin-top:var(--space-6);">

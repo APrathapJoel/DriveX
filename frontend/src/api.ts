@@ -37,12 +37,15 @@ class ApiClient {
   private async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const { method = 'GET', body, headers = {} } = options;
 
+    const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+    const reqHeaders: Record<string, string> = { ...headers };
+    if (!isFormData) {
+      reqHeaders['Content-Type'] = 'application/json';
+    }
+
     const config: RequestInit = {
       method,
-      headers: {
-        'Content-Type': 'application/json',
-        ...headers,
-      },
+      headers: reqHeaders,
       credentials: 'include' as RequestCredentials,
     };
 
@@ -51,7 +54,7 @@ class ApiClient {
     }
 
     if (body && method !== 'GET') {
-      config.body = JSON.stringify(body);
+      config.body = isFormData ? (body as FormData) : JSON.stringify(body);
     }
 
     const response = await fetch(`${API_BASE}${endpoint}`, config);
@@ -93,6 +96,10 @@ class ApiClient {
 
   delete<T>(endpoint: string) {
     return this.request<T>(endpoint, { method: 'DELETE' });
+  }
+
+  upload<T>(endpoint: string, formData: FormData) {
+    return this.request<T>(endpoint, { method: 'POST', body: formData });
   }
 }
 

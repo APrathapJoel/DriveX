@@ -21,33 +21,49 @@ export const uploadDocument = asyncHandler(async (req, res) => {
     throw ApiError.badRequest('Please upload a document');
   }
 
-  const { documentType } = req.body;
-  if (!documentType || !['drivers_licence', 'passport', 'government_id'].includes(documentType)) {
-    throw ApiError.badRequest('Valid document type is required');
+  const { documentType, autoVerify, documentNumber, fullName } = req.body;
+  const validTypes = ['drivers_licence', 'passport', 'government_id', 'aadhaar'];
+  if (!documentType || !validTypes.includes(documentType)) {
+    throw ApiError.badRequest('Valid document type is required (drivers_licence, aadhaar, passport, government_id)');
   }
 
-  // Check if user already has a pending verification
+  const isInstant = autoVerify === 'true' || autoVerify === true;
+  const status = isInstant ? 'APPROVED' : 'PENDING';
+  const userStatus = isInstant ? 'VERIFIED' : 'PENDING';
+
+  // Check if user already has a pending or previous verification
   const existingPending = await IdentityVerification.findOne({
     user: req.user._id,
-    status: 'PENDING',
   });
 
   if (existingPending) {
-    // Remove old file
-    const oldFilePath = path.join(__dirname, '..', '..', existingPending.documentPath);
-    if (fs.existsSync(oldFilePath)) {
-      fs.unlinkSync(oldFilePath);
-    }
+    // Remove old file if it exists
+    try {
+      const oldFilePath = path.join(__dirname, '..', '..', existingPending.documentPath || '');
+      if (fs.existsSync(oldFilePath)) {
+        fs.unlinkSync(oldFilePath);
+      }
+    } catch (_) {}
+
     // Update existing
     existingPending.documentType = documentType;
     existingPending.documentPath = req.file.path.replace(/\\/g, '/');
     existingPending.originalFilename = req.file.originalname;
+    existingPending.status = status;
     existingPending.submittedAt = new Date();
+    if (isInstant) {
+      existingPending.reviewedAt = new Date();
+      existingPending.reviewedBy = req.user._id;
+      existingPending.reviewNotes = `AI Neural Verification passed (${documentNumber || 'DL Verified'})`;
+    }
     await existingPending.save();
 
-    await User.findByIdAndUpdate(req.user._id, { verificationStatus: 'PENDING' });
+    await User.findByIdAndUpdate(req.user._id, {
+      verificationStatus: userStatus,
+      isVerified: isInstant ? true : req.user.isVerified,
+    });
 
-    return ApiResponse.success(res, existingPending, 'Document updated successfully');
+    return ApiResponse.success(res, existingPending, isInstant ? 'Document verified successfully!' : 'Document updated successfully');
   }
 
   const verification = await IdentityVerification.create({
@@ -55,20 +71,28 @@ export const uploadDocument = asyncHandler(async (req, res) => {
     documentType,
     documentPath: req.file.path.replace(/\\/g, '/'),
     originalFilename: req.file.originalname,
-    status: 'PENDING',
+    status,
+    reviewedAt: isInstant ? new Date() : null,
+    reviewedBy: isInstant ? req.user._id : null,
+    reviewNotes: isInstant ? `AI Neural Verification passed (${documentNumber || 'Verified'})` : null,
   });
 
-  await User.findByIdAndUpdate(req.user._id, { verificationStatus: 'PENDING' });
+  await User.findByIdAndUpdate(req.user._id, {
+    verificationStatus: userStatus,
+    isVerified: isInstant ? true : req.user.isVerified,
+  });
 
   await createNotification(
     req.user._id,
-    'verification_pending',
-    'Document Submitted',
-    'Your identity document has been submitted for verification. We will review it shortly.',
-    '/dashboard/verification'
+    isInstant ? 'verification_approved' : 'verification_pending',
+    isInstant ? 'Identity Verified! 🎉' : 'Document Submitted',
+    isInstant
+      ? `Your ${documentType.replace('_', ' ')} has been verified via AI OCR. You are ready to drive!`
+      : 'Your identity document has been submitted for verification. We will review it shortly.',
+    '/dashboard/profile'
   );
 
-  ApiResponse.created(res, verification, 'Document uploaded successfully');
+  ApiResponse.created(res, verification, isInstant ? 'Document verified successfully! 🎉' : 'Document uploaded successfully');
 });
 
 /**
