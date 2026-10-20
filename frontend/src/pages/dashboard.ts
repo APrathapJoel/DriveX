@@ -30,6 +30,12 @@ export function renderDashboardPage(section = 'overview'): string {
               <a href="/dashboard/bookings" data-link class="dashboard-nav-link ${section === 'bookings' ? 'active' : ''}">
                 📋 My Bookings
               </a>
+              <a href="/kyc" data-link class="dashboard-nav-link">
+                🪪 KYC Verification
+              </a>
+              <a href="/payment" data-link class="dashboard-nav-link">
+                💳 Payment Gateway
+              </a>
               <a href="/dashboard/notifications" data-link class="dashboard-nav-link ${section === 'notifications' ? 'active' : ''}">
                 🔔 Notifications
               </a>
@@ -179,31 +185,13 @@ async function loadBookings(container: HTMLElement) {
 }
 
 function attachBookingHandlers(container: HTMLElement, reloadFn: () => Promise<void>) {
-  // Pay booking handlers
+  // Pay booking handlers - open interactive payment gateway
   container.querySelectorAll('.pay-booking-btn').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
+    btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       const bookingId = (btn as HTMLElement).dataset.bookingId!;
-      const vehicle = (btn as HTMLElement).dataset.vehicle!;
-      const amount = (btn as HTMLElement).dataset.amount!;
-
-      const originalText = (btn as HTMLElement).innerHTML;
-      (btn as HTMLElement).innerHTML = '<div class="spinner" style="width:14px;height:14px;border-top-color:white;display:inline-block;vertical-align:middle;margin-right:6px;"></div> Paying...';
-      (btn as HTMLElement).setAttribute('disabled', 'true');
-
-      try {
-        const createRes = await api.post<{ success: boolean; data: { payment: any } }>('/payments/create', { bookingId });
-        const paymentId = createRes.data.payment._id || createRes.data.payment.id;
-        
-        await api.post('/payments/verify', { paymentId, bookingId });
-        showToast(`Payment of ₹${Number(amount).toLocaleString()} for ${vehicle} completed! Booking confirmed 🎉`, 'success');
-        await reloadFn();
-      } catch (err: any) {
-        showToast(err.message || 'Payment failed', 'error');
-        (btn as HTMLElement).innerHTML = originalText;
-        (btn as HTMLElement).removeAttribute('disabled');
-      }
+      router.navigate(`/payment?bookingId=${bookingId}`);
     });
   });
 
@@ -358,8 +346,13 @@ function loadProfile(container: HTMLElement) {
           </div>
           <div class="form-group">
             <label class="form-label">Verification</label>
-            <div style="padding: var(--space-3) 0;">
+            <div style="padding: var(--space-2) 0; display:flex; align-items:center; gap:var(--space-3); flex-wrap:wrap;">
               ${getStatusBadge(user.verificationStatus.toLowerCase())}
+              ${user.verificationStatus !== 'VERIFIED' ? `
+                <a href="/kyc" data-link class="btn btn-accent btn-sm">🪪 Verify ID with AI Scanner</a>
+              ` : `
+                <a href="/kyc" data-link class="btn btn-ghost btn-sm" style="color:var(--success);">View Certificate ✓</a>
+              `}
             </div>
           </div>
         </div>

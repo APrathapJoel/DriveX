@@ -14,6 +14,8 @@ export function renderHeader(): string {
         <nav class="nav-links" id="nav-links">
           <a href="/" data-link class="nav-link" data-route="/">Home</a>
           <a href="/vehicles" data-link class="nav-link" data-route="/vehicles">Vehicles</a>
+          <a href="/kyc" data-link class="nav-link" data-route="/kyc">Instant KYC</a>
+          <a href="/payment" data-link class="nav-link" data-route="/payment">Pay & Checkout</a>
           ${user ? `<a href="/dashboard" data-link class="nav-link" data-route="/dashboard">Dashboard</a>` : ''}
           ${user?.role === 'admin' ? `<a href="/admin" data-link class="nav-link" data-route="/admin">Admin</a>` : ''}
         </nav>
@@ -48,6 +50,8 @@ export function renderHeader(): string {
           <div class="dropdown-divider"></div>
           <a href="/dashboard" data-link class="dropdown-item">📊 Dashboard</a>
           <a href="/dashboard/bookings" data-link class="dropdown-item">📋 My Bookings</a>
+          <a href="/kyc" data-link class="dropdown-item">🪪 Instant KYC Verification</a>
+          <a href="/payment" data-link class="dropdown-item">💳 Payment Gateway</a>
           <a href="/dashboard/profile" data-link class="dropdown-item">👤 Profile</a>
           <div class="dropdown-divider"></div>
           <button class="dropdown-item dropdown-logout" id="logout-btn">🚪 Log out</button>
@@ -58,6 +62,8 @@ export function renderHeader(): string {
       <div class="mobile-nav" id="mobile-nav" style="display:none;">
         <a href="/" data-link class="mobile-nav-link">Home</a>
         <a href="/vehicles" data-link class="mobile-nav-link">Vehicles</a>
+        <a href="/kyc" data-link class="mobile-nav-link">Instant KYC</a>
+        <a href="/payment" data-link class="mobile-nav-link">Payment Gateway</a>
         ${user ? `
           <a href="/dashboard" data-link class="mobile-nav-link">Dashboard</a>
           <a href="/dashboard/bookings" data-link class="mobile-nav-link">My Bookings</a>

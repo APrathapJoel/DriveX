@@ -18,6 +18,8 @@ import { renderHelpPage, initHelpPage } from './pages/help'
 import { renderSafetyPage, initSafetyPage } from './pages/safety'
 import { renderTermsPage, initTermsPage } from './pages/terms'
 import { renderPrivacyPage, initPrivacyPage } from './pages/privacy'
+import { renderPaymentPage, initPaymentPage } from './pages/payment'
+import { renderKycPage, initKycPage } from './pages/kyc'
 
 const app = document.querySelector<HTMLDivElement>('#app')!
 
@@ -32,6 +34,18 @@ router
   .add('/', () => {
     renderPage(renderHomePage());
     initHomePage();
+  })
+  .add('/payment', () => {
+    renderPage(renderPaymentPage());
+    initPaymentPage();
+  })
+  .add('/kyc', () => {
+    renderPage(renderKycPage());
+    initKycPage();
+  })
+  .add('/verification', () => {
+    renderPage(renderKycPage());
+    initKycPage();
   })
   .add('/vehicles', () => {
     renderPage(renderVehiclesPage());

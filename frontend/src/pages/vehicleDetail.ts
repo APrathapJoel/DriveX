@@ -322,15 +322,20 @@ function initBookingForm(vehicleId: string) {
     bookBtn.setAttribute('disabled', 'true');
 
     try {
-      await api.post('/bookings', {
+      const res = await api.post<{ success: boolean; data: any }>('/bookings', {
         vehicleId,
         startDate: new Date(startInput.value).toISOString(),
         endDate: new Date(endInput.value).toISOString(),
         pickupLocation: locationInput?.value || undefined,
       });
 
-      showToast('Booking created successfully! 🎉', 'success');
-      router.navigate('/dashboard/bookings');
+      showToast('Booking reserved! Proceeding to Payment... 🎉', 'success');
+      const bookingId = res.data?._id || res.data?.id;
+      if (bookingId) {
+        router.navigate(`/payment?bookingId=${bookingId}`);
+      } else {
+        router.navigate('/payment');
+      }
     } catch (err: any) {
       if (err.status === 401 || err.message?.includes('User no longer exists') || err.message?.includes('Not authorized')) {
         auth.handleUnauthorized();

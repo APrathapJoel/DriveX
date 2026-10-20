@@ -106,3 +106,46 @@ export const getDocument = asyncHandler(async (req, res) => {
 
   res.sendFile(filePath);
 });
+
+/**
+ * @desc    Simulate instant AI KYC verification & approval (gimmick flow)
+ * @route   POST /api/verification/quick-verify
+ * @access  Private
+ */
+export const quickVerify = asyncHandler(async (req, res) => {
+  const { documentType = 'drivers_licence', documentNumber = 'DL-0420110012345', fullName } = req.body;
+
+  const verification = await IdentityVerification.create({
+    user: req.user._id,
+    documentType,
+    documentPath: `/uploads/kyc_${documentType}.png`,
+    originalFilename: `verified_${documentType}.png`,
+    status: 'APPROVED',
+    reviewedBy: req.user._id,
+    reviewedAt: new Date(),
+    reviewNotes: `Auto-verified via AI Neural OCR (${documentNumber}) - Identity Confirmed`,
+  });
+
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      isVerified: true,
+      verificationStatus: 'VERIFIED',
+    },
+    { new: true }
+  );
+
+  await createNotification(
+    req.user._id,
+    'verification_approved',
+    'KYC Identity Verified! 🎉',
+    `Congratulations ${updatedUser?.name || 'Driver'}! Your ${documentType.replace('_', ' ')} has been verified. You can now drive any vehicle with zero deposit hold.`,
+    '/dashboard/profile'
+  );
+
+  ApiResponse.success(res, {
+    user: updatedUser,
+    verification,
+  }, 'Identity verified successfully!');
+});
+
