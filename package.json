@@ -1,0 +1,14 @@
+{
+  "name": "driver-vehicle-rental",
+  "version": "1.0.0",
+  "description": "DriveR - Premium Car Rental Platform",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "install:all": "cd frontend && npm install && cd ../backend && npm install",
+    "seed": "cd backend && npm run seed"
+  }
+}
