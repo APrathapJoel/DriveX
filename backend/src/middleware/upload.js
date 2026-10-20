@@ -8,13 +8,21 @@ import ApiError from '../utils/ApiError.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Ensure upload directories exist
-const vehicleUploadDir = path.join(__dirname, '..', '..', 'uploads', 'vehicles');
-const idUploadDir = path.join(__dirname, '..', '..', 'uploads', 'ids');
+// Ensure upload directories exist (using /tmp on Vercel serverless environment)
+const uploadBase = process.env.VERCEL
+  ? path.join('/tmp', 'uploads')
+  : path.join(__dirname, '..', '..', 'uploads');
+
+export const vehicleUploadDir = path.join(uploadBase, 'vehicles');
+export const idUploadDir = path.join(uploadBase, 'ids');
 
 [vehicleUploadDir, idUploadDir].forEach(dir => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  try {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  } catch (err) {
+    console.warn(`[Upload] Could not create directory ${dir}: ${err.message}`);
   }
 });
 

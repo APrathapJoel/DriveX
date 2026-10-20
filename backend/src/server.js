@@ -68,7 +68,10 @@ if (config.nodeEnv === 'development') {
 }
 
 // Static files for car images (public)
-app.use('/uploads/vehicles', express.static(path.join(__dirname, '..', 'uploads', 'vehicles')));
+const staticUploadsDir = process.env.VERCEL
+  ? path.join('/tmp', 'uploads', 'vehicles')
+  : path.join(__dirname, '..', 'uploads', 'vehicles');
+app.use('/uploads/vehicles', express.static(staticUploadsDir));
 
 // API Routes
 app.use('/api/auth', authRoutes);
